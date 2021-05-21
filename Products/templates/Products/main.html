@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load colorize %}
+{% block content %}
+    
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand col text-center" href="#"><h2>PriceTracker</h2></a>
+</nav>
+        <!-- Modal -->
+        <div class="modal fade" id="productAdd" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+               <h5 class="modal-title" id="exampleModalLabel">Add Your Product for Price Tracking!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" autocomplete="off">
+                    {% csrf_token %}
+                    {{page|crispy}}
+                <button type="submit" class="btn btn-primary">Submit URL</button>
+            </div>
+            </div>
+    </div>
+    </div>
+    <div class="row">
+    <div class="col text-left">
+    <div class="text-primary">Tracked Quantity: {{quantity}}</div>
+        <div class="text-success">Price Dropped Quantity: {{pricedropped}}</div>
+   
+    </div>
+    <div class="col text-right mt-3">
+     <button class="btn btn-outline-success" data-toggle="modal" data-target="#productAdd">ADD</button>
+     <a href="{% url 'update' %}">
+        <button class="btn btn-warning">UPDATE</button>
+        </a>
+        
+    </div>
+</div>
+{% if query_set %}
+    {% for item in query_set %}
+
+        <div class="card mt-3">        
+            <div class="card-header">
+                <h5>{{item.name}}</h5>
+            <div class="col text-right">
+                <a href="{% url 'delete' item.pk %}"><p class="btn btn-danger">DELETE</p></a>
+            </div>
+            </div>
+                <div class="card-body">
+                    <div class="blockquote">
+                    <div>Present Price (Rs/-): {{item.currentprice}}</div>
+                    <div>Earlier Price (Rs/-): {{item.oldprice}}</div>
+                    <div>Dropped Price (Rs/-): {{item.pricedifference|colorize}}</div>
+                    <div>Product Link: <a href="{{item.url}}">{{item.url}}</a></div>
+            </div>
+         </div>
+
+
+    {% endfor %}
+
+
+{% else %}
+    <h2> No Product Tracked! </h2>
+{% endif %}
+
+{% endblock content %}
